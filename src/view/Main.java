@@ -12,10 +12,11 @@ public class Main {
 		Semaphore semaforoDeposito = new Semaphore(1);
 		
 		for(int i = 1; i<=20; i++) {
-			
-			int saldoConta = (int)((Math.random()*5001) + 1000);
-			int valorTransacao = (int)((Math.random()*501)+50);
-			int opcao = (int)((Math.random()* 99) + 1);
+		
+			int saldoConta = (int)((Math.random()*5001) + 1000); //Saldo aleatório entre 1000 e 6000
+			int valorTransacao = (int)((Math.random()*501)+50); //Transação aleatória entre 50 e 550
+			int opcao = (int)((Math.random()* 99) + 1); //Para ser mais randomico de 1 a 100
+			//Se for par realizará saque, caso contrario depósito		
 			if(opcao % 2 != 0 ) {
 				opcao = 1;
 			}
@@ -24,7 +25,6 @@ public class Main {
 			}
 			Thread t = new ThreadTransacao(i, saldoConta, valorTransacao, opcao, semaforoSaque, semaforoDeposito);
 			t.start();
-			
 		}
 		
 

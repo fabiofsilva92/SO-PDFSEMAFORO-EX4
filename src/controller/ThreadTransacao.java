@@ -10,6 +10,7 @@ public class ThreadTransacao extends Thread {
 	private Semaphore semaforoSaque, semaforoDeposito;
 	private int opcao;
 
+	//Construutor da Thread
 	public ThreadTransacao(int idConta, int saldoConta, int valorTransacao, int opcao, Semaphore semaforoSaque,
 			Semaphore semaforoDeposito) {
 		this.idConta = idConta;
@@ -22,54 +23,50 @@ public class ThreadTransacao extends Thread {
 
 	@Override
 	public void run() {
-		
-		if(opcao == 0) {
 			try {
-				semaforoSaque.acquire();
-				Saque();
+				if(opcao == 0) {
+					semaforoSaque.acquire();
+					Transacao();
+				}
+				else{
+					semaforoDeposito.acquire();
+					Transacao();
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}finally {
-				semaforoSaque.release();
+			} finally {
+				if(opcao == 0) {
+					semaforoSaque.release();
+				}
+				else {
+					semaforoDeposito.release();
+				}
 			}
+	}
+	
+	//Transações disponiveis.
+	public void Transacao() {
+		if(opcao ==0) {
+			System.out.println("#ID " + idConta + " SAQUE -> Saldo: " + saldoConta + " -> Realizando saque de R$" + valorTransacao);
+
+			saldoConta -= valorTransacao;
+			try {
+				sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println("#ID " + idConta + " -> Saque realizado. Saldo Disponível R$" + saldoConta);
 		}
 		else {
+			System.out.println("#ID " + idConta + " DEPOSITO -> Saldo: " + saldoConta + " -> Realizando depósito de R$"+ valorTransacao);
+			
+			saldoConta += valorTransacao;
 			try {
-				semaforoDeposito.acquire();
-				Deposito();
+				sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}finally {
-				semaforoDeposito.release();
 			}
-			
+			System.out.println("#ID " + idConta + " -> Depósito realizado. Saldo Disponível R$" + saldoConta);
 		}
-
 	}
-
-	public void Saque() {
-		
-		System.out
-				.println("#ID " + idConta + " SAQUE -> Saldo: " + saldoConta + " -> Realizando saque de R$" + valorTransacao);
-		saldoConta = saldoConta - valorTransacao;
-		try {
-			sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("#ID " + idConta + " -> Saque realizado. Saldo Disponível R$" + saldoConta);
-	}
-
-	public void Deposito() {
-		System.out.println(
-				"#ID " + idConta + " DEPOSITO -> Saldo: " + saldoConta + " -> Realizando depósito de R$" + valorTransacao);
-		saldoConta = saldoConta + valorTransacao;
-		try {
-			sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("#ID " + idConta + " -> Depósito realizado. Saldo Disponível R$" + saldoConta);
-	}
-
 }
